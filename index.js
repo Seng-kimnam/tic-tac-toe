@@ -1,26 +1,61 @@
-const products = document.querySelectorAll('.product');
-const cartItems = document.querySelector('.cart-items');
-const totalPrice = document.querySelector('.total-price');
+let currentPlayer = "X";
+let cells = document.querySelectorAll(".cell");
 
-let cartTotal = 0;
-
-// Add click event listener to all "Add to Cart" buttons
-products.forEach((product) => {
-  const addToCartBtn = product.querySelector('.add-to-cart');
-  const productPrice = parseFloat(product.querySelector('.price').textContent.slice(1));
-
-  addToCartBtn.addEventListener('click', () => {
-    cartTotal += productPrice;
-    updateCartTotal();
-
-    // Create new cart item
-    const cartItem = document.createElement('li');
-    cartItem.textContent = product.querySelector('h3').textContent;
-    cartItems.appendChild(cartItem);
-  });
+cells.forEach((cell) => {
+	cell.addEventListener("click", handleCellClick);
 });
 
-// Update cart total price
-function updateCartTotal() {
-  totalPrice.textContent = `$${cartTotal.toFixed(2)}`;
+function handleCellClick(e) {
+	let cell = e.target;
+	if (cell.textContent === "") {
+		cell.textContent = currentPlayer;
+		checkForWinner();
+		switchPlayer();
+	}
 }
+
+function switchPlayer() {
+	currentPlayer = currentPlayer === "X" ? "O" : "X";
+}
+
+function checkForWinner() {
+	let row1 = cells[0].textContent + cells[1].textContent + cells[2].textContent;
+	let row2 = cells[3].textContent + cells[4].textContent + cells[5].textContent;
+	let row3 = cells[6].textContent + cells[7].textContent + cells[8].textContent;
+	let col1 = cells[0].textContent + cells[3].textContent + cells[6].textContent;
+	let col2 = cells[1].textContent + cells[4].textContent + cells[7].textContent;
+	let col3 = cells[2].textContent + cells[5].textContent + cells[8].textContent;
+	let diag1 = cells[0].textContent + cells[4].textContent + cells[8].textContent;
+	let diag2 = cells[2].textContent + cells[4].textContent + cells[6].textContent;
+
+	let lines = [row1, row2, row3, col1, col2, col3, diag1, diag2];
+	
+	for (let line of lines) {
+		if (line === "XXX" || line === "OOO") {
+			alert(currentPlayer + " wins!");
+			resetGame();
+			return;
+		}
+	}
+
+	let isDraw = true;
+	for (let cell of cells) {
+		if (cell.textContent === "") {
+			isDraw = false;
+			break;
+		}
+	}
+
+	if (isDraw) {
+		alert("It's a draw!");
+		resetGame();
+	}
+}
+
+function resetGame() {
+  cells.forEach((cell) => {
+      cell.textContent = "";
+  });
+  currentPlayer = "X";
+}
+
